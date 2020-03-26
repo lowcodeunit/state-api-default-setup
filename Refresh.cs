@@ -28,11 +28,11 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
     public class Refresh
     {
-        protected EnterpriseManagerClient entMgr;
+        protected ApplicationManagerClient appMgr;
 
-        public Refresh(EnterpriseManagerClient entMgr)
+        public Refresh(ApplicationManagerClient appMgr)
         {
-            this.entMgr = entMgr;
+            this.appMgr = appMgr;
         }
 
         [FunctionName("Refresh")]
@@ -47,6 +47,7 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
                 var stateDetails = StateUtils.LoadStateDetails(req);
 
+                await harness.Ensure(appMgr, stateDetails.EnterpriseAPIKey);
             });
         }
     }
