@@ -22,6 +22,7 @@ using LCU.Personas.Client.DevOps;
 using LCU.Personas.Enterprises;
 using LCU.Personas.Client.Applications;
 using Fathym.API;
+using LCU.Graphs.Registry.Enterprises.IDE;
 
 namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 {
@@ -40,9 +41,96 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         #endregion
 
         #region API Methods
-        public virtual void CompleteBoot()
+        public virtual async Task Ensure(ApplicationManagerClient appMgr, string entApiKey)
         {
-            // State.L = true;
+            var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
+
+            State.Activities = activitiesResp.Model;
+
+            var appsResp = await appMgr.ListApplications(entApiKey);
+
+            State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
+
+            State.RootActivities = new List<IDEActivity>();
+
+            State.RootActivities.Add(new IDEActivity()
+            {
+                Icon = "settings",
+                Lookup = Environment.GetEnvironmentVariable("FORGE-SETTINGS-PATH") ?? "/forge-settings",
+                Title = "Settings"
+            });
+
+            await LoadSideBar(appMgr, entApiKey);
+        }
+
+        public virtual async Task LoadSideBar(ApplicationManagerClient appMgr, string entApiKey)
+        {
+            if (State.SideBar == null)
+                State.SideBar = new IDESideBar();
+
+            if (State.CurrentActivity != null)
+            {
+                var sectionsResp = await appMgr.LoadIDESideBarSections(entApiKey, State.CurrentActivity.Lookup);
+
+                State.SideBar.Actions = sectionsResp.Model.SelectMany(section =>
+                {
+                    var actionsResp = appMgr.LoadIDESideBarActions(entApiKey, State.CurrentActivity.Lookup, section).Result;
+
+                    return actionsResp.Model;
+                }).ToList();
+            }
+            else
+                State.SideBar = new IDESideBar();
+        }
+
+        public virtual async Task RemoveEditor(string editorLookup)
+        {
+            State.Editors = State.Editors.Where(e => e.Lookup != editorLookup).ToList();
+
+            State.CurrentEditor = State.Editors.FirstOrDefault();
+
+            State.SideBar.CurrentAction = State.SideBar.Actions.FirstOrDefault(a => $"{a.Group}|{a.Action}" == State.CurrentEditor?.Lookup);
+        }
+
+        public virtual async Task SelectEditor(string editorLookup)
+        {
+            State.SideBar.CurrentAction = State.SideBar.Actions.FirstOrDefault(a => $"{a.Group}|{a.Action}" == editorLookup);
+
+            State.CurrentEditor = State.Editors.FirstOrDefault(a => a.Lookup == editorLookup);
+        }
+
+        public virtual async Task SelectSideBarAction(ApplicationManagerClient appMgr, string entApiKey, string host, string group, string action, string section)
+        {
+            State.SideBar.CurrentAction = State.SideBar.Actions.FirstOrDefault(a => a.Group == group && a.Action == action);
+
+            if (State.Editors.IsNullOrEmpty())
+                State.Editors = new List<IDEEditor>();
+
+            var actionLookup = $"{group}|{action}";
+
+            if (!State.Editors.Select(e => e.Lookup).Contains(actionLookup))
+            {
+                var ideEditorResp = await appMgr.LoadIDEEditor(entApiKey, group, action, section, host, State.CurrentActivity.Lookup);
+
+                if (ideEditorResp.Status)
+                    State.Editors.Add(ideEditorResp.Model);
+            }
+
+            State.CurrentEditor = State.Editors.FirstOrDefault(a => a.Lookup == actionLookup);
+        }
+
+        public virtual async Task SetActivity(ApplicationManagerClient appMgr, string entApiKey, string activityLookup)
+        {
+            State.CurrentActivity = State.Activities.FirstOrDefault(a => a.Lookup == activityLookup);
+
+            await LoadSideBar(appMgr, entApiKey);
+
+            State.SideBar.CurrentAction = State.SideBar.Actions.FirstOrDefault(a => $"{a.Group}|{a.Action}" == State.CurrentEditor?.Lookup);
+        }
+
+        public virtual async Task ToggleShowPanels(string group, string action)
+        {
+            State.ShowPanels = !State.ShowPanels;
         }
         #endregion
     }
