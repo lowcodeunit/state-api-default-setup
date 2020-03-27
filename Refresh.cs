@@ -15,6 +15,7 @@ using Fathym.API;
 using System.Collections.Generic;
 using System.Linq;
 using LCU.Personas.Client.Applications;
+using LCU.Personas.Client.Identity;
 using LCU.StateAPI.Utilities;
 using System.Security.Claims;
 using LCU.Personas.Client.Enterprises;
@@ -30,9 +31,13 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
     {
         protected ApplicationManagerClient appMgr;
 
-        public Refresh(ApplicationManagerClient appMgr)
+        protected IdentityManagerClient idMgr;
+
+        public Refresh(ApplicationManagerClient appMgr, IdentityManagerClient idMgr)
         {
             this.appMgr = appMgr;
+
+            this.idMgr = idMgr;
         }
 
         [FunctionName("Refresh")]
@@ -47,7 +52,7 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
                 var stateDetails = StateUtils.LoadStateDetails(req);
 
-                await harness.Ensure(appMgr, stateDetails.EnterpriseAPIKey);
+                await harness.Ensure(appMgr, idMgr, stateDetails.EnterpriseAPIKey, stateDetails.Username);
             });
         }
     }
