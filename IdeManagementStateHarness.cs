@@ -109,6 +109,7 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                     }).ToList();
 
                 } else {
+                    // If the user is a free trial user, load the restricted set of sidebar actions
                     State.SideBar.Actions = new List<IDESideBarAction>();
 
                     State.SideBar.Actions.Add(new IDESideBarAction() 
