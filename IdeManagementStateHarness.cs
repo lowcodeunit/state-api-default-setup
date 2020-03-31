@@ -21,6 +21,7 @@ using LCU.Personas.Client.Enterprises;
 using LCU.Personas.Client.DevOps;
 using LCU.Personas.Enterprises;
 using LCU.Personas.Client.Applications;
+using LCU.Personas.Client.Identity;
 using Fathym.API;
 using LCU.Graphs.Registry.Enterprises.IDE;
 
@@ -131,6 +132,20 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         public virtual async Task ToggleShowPanels(string group, string action)
         {
             State.ShowPanels = !State.ShowPanels;
+        }
+
+        public virtual async Task ListSubscribers(IdentityManagerClient idMgr, string entApiKey, string isLimited) 
+        {
+            // Get the list of subscribers based on subscriber status
+            var subscriberResp = await idMgr.ListSubscribers(entApiKey, isLimited).Result;
+
+            // Update subscriber state
+            if (isLimited == "true") {
+                State.SubscribersLimited = subscriberResp;
+            } else {
+                State.SubscribersActive = subscriberResp;
+            }
+            
         }
         #endregion
     }
