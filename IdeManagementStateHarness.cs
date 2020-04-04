@@ -21,6 +21,7 @@ using LCU.Personas.Client.Enterprises;
 using LCU.Personas.Client.DevOps;
 using LCU.Personas.Enterprises;
 using LCU.Personas.Client.Applications;
+using LCU.Personas.Client.Identity;
 using Fathym.API;
 using LCU.Graphs.Registry.Enterprises.IDE;
 
@@ -41,26 +42,52 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         #endregion
 
         #region API Methods
-        public virtual async Task Ensure(ApplicationManagerClient appMgr, string entApiKey)
+        public virtual async Task Ensure(ApplicationManagerClient appMgr, IdentityManagerClient idMgr, string entApiKey, string username)
         {
-            var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
 
-            State.Activities = activitiesResp.Model;
+            // check in to see if user has free trial/paid subscriber rights    
+            var authResp = await idMgr.HasAccess(entApiKey, username, new List<string>() { "LCU.NapkinIDE.ActiveSubscriber" });
 
-            var appsResp = await appMgr.ListApplications(entApiKey);
+            State.IsActiveSubscriber = authResp.Status;
 
-            State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
-
-            State.RootActivities = new List<IDEActivity>();
-
-            State.RootActivities.Add(new IDEActivity()
+            if (State.IsActiveSubscriber)
             {
-                Icon = "settings",
-                Lookup = Environment.GetEnvironmentVariable("FORGE-SETTINGS-PATH") ?? "/forge-settings",
-                Title = "Settings"
-            });
+
+                var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
+
+                State.Activities = activitiesResp.Model;
+
+                var appsResp = await appMgr.ListApplications(entApiKey);
+
+                State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
+
+                State.RootActivities = new List<IDEActivity>();
+
+                State.RootActivities.Add(new IDEActivity()
+                {
+                    Icon = "settings",
+                    Lookup = Environment.GetEnvironmentVariable("FORGE-SETTINGS-PATH") ?? "/forge-settings",
+                    Title = "Settings"
+                });
+
+            }
+            else
+            {
+
+                State.RootActivities = new List<IDEActivity>();
+
+                State.Activities = new List<IDEActivity>();
+
+                State.Activities.Add(new IDEActivity()
+                {
+                    Icon = "redeem",
+                    Lookup = "limited-trial",
+                    Title = "Limited Trial"
+                });
+            }
 
             await LoadSideBar(appMgr, entApiKey);
+
         }
 
         public virtual async Task LoadSideBar(ApplicationManagerClient appMgr, string entApiKey)
@@ -70,14 +97,45 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
             if (State.CurrentActivity != null)
             {
-                var sectionsResp = await appMgr.LoadIDESideBarSections(entApiKey, State.CurrentActivity.Lookup);
-
-                State.SideBar.Actions = sectionsResp.Model.SelectMany(section =>
+                if (State.IsActiveSubscriber)
                 {
-                    var actionsResp = appMgr.LoadIDESideBarActions(entApiKey, State.CurrentActivity.Lookup, section).Result;
+                    var sectionsResp = await appMgr.LoadIDESideBarSections(entApiKey, State.CurrentActivity.Lookup);
 
-                    return actionsResp.Model;
-                }).ToList();
+                    State.SideBar.Actions = sectionsResp.Model.SelectMany(section =>
+                    {
+                        var actionsResp = appMgr.LoadIDESideBarActions(entApiKey, State.CurrentActivity.Lookup, section).Result;
+
+                        return actionsResp.Model;
+                    }).ToList();
+
+                } else {
+                    // If the user is a free trial user, load the restricted set of sidebar actions
+                    State.SideBar.Actions = new List<IDESideBarAction>();
+
+                    State.SideBar.Actions.Add(new IDESideBarAction() 
+                    {
+                        Action = "welcome",
+                        Group = "lcu-limited-trial",
+                        Section = "Limited Low-Code Unit™ Trials",
+                        Title = "Welcome"
+                    });
+
+                    State.SideBar.Actions.Add(new IDESideBarAction() 
+                    {
+                        Action = "data-flow",
+                        Group = "lcu-limited-trial",
+                        Section = "Limited Low-Code Unit™ Trials",
+                        Title = "Data Flow"
+                    });
+
+                    State.SideBar.Actions.Add(new IDESideBarAction() 
+                    {
+                        Action = "data-apps",
+                        Group = "lcu-limited-trial",
+                        Section = "Limited Low-Code Unit™ Trials",
+                        Title = "Data Applications"
+                    });
+                }
             }
             else
                 State.SideBar = new IDESideBar();

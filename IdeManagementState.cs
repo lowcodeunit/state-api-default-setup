@@ -47,6 +47,9 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 		public virtual bool InfrastructureConfigured { get; set; }
 
 		[DataMember]
+		public virtual bool IsActiveSubscriber { get; set; }
+
+		[DataMember]
 		public virtual bool Loading { get; set; }
 
 		[DataMember]
