@@ -190,6 +190,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         {
             State.ShowPanels = !State.ShowPanels;
         }
+
+        
         #endregion
     }
 }
