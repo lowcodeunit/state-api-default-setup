@@ -64,11 +64,5 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 		[DataMember]
 		public virtual List<string> StatusChanges { get; set; }
 
-		[DataMember]
-		public virtual List<object> SubscribersActive { get; set;}
-
-		[DataMember]
-		public virtual List<object> SubscribersLimited { get; set;}
-
     }
 }

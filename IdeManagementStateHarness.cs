@@ -134,19 +134,7 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
             State.ShowPanels = !State.ShowPanels;
         }
 
-        public virtual async Task ListSubscribers(IdentityManagerClient idMgr, string entApiKey, string isLimited) 
-        {
-            // Get the list of subscribers based on subscriber status
-            var subscriberResp = await idMgr.ListSubscribers(entApiKey, isLimited).Result;
-
-            // Update subscriber state
-            if (isLimited == "true") {
-                State.SubscribersLimited = subscriberResp;
-            } else {
-                State.SubscribersActive = subscriberResp;
-            }
-            
-        }
+        
         #endregion
     }
 }
