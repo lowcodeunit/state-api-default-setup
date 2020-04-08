@@ -43,6 +43,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                 var stateDetails = StateUtils.LoadStateDetails(req);
 
 				await harness.SelectEditor(reqData.EditorLookup);
+
+                return Status.Success;
             });
         }
     }

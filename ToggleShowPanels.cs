@@ -42,6 +42,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                 var stateDetails = StateUtils.LoadStateDetails(req);
 
 				await harness.ToggleShowPanels(reqData.Group, reqData.Action);
+
+                return Status.Success;
             });
         }
     }
