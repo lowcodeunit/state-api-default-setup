@@ -66,5 +66,6 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
 		[DataMember]
 		public virtual List<string> StatusChanges { get; set; }
+
     }
 }
