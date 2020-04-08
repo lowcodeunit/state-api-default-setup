@@ -50,16 +50,15 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
             State.IsActiveSubscriber = authResp.Status;
 
+            var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
+
             if (State.IsActiveSubscriber)
             {
-
-                var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
-
-                State.Activities = activitiesResp.Model;
-
                 var appsResp = await appMgr.ListApplications(entApiKey);
 
                 State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
+
+                State.Activities = activitiesResp.Model ?? new List<IDEActivity>();
 
                 State.RootActivities = new List<IDEActivity>();
 
@@ -69,21 +68,12 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                     Lookup = Environment.GetEnvironmentVariable("FORGE-SETTINGS-PATH") ?? "/forge-settings",
                     Title = "Settings"
                 });
-
             }
             else
             {
-
                 State.RootActivities = new List<IDEActivity>();
 
-                State.Activities = new List<IDEActivity>();
-
-                State.Activities.Add(new IDEActivity()
-                {
-                    Icon = "redeem",
-                    Lookup = "limited-trial",
-                    Title = "Limited Trial"
-                });
+                State.Activities = activitiesResp.Model?.Where(act => act.Lookup == "limited-trial").ToList() ?? new List<IDEActivity>();
             }
 
             await LoadSideBar(appMgr, entApiKey);
@@ -97,45 +87,14 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
             if (State.CurrentActivity != null)
             {
-                if (State.IsActiveSubscriber)
+                var sectionsResp = await appMgr.LoadIDESideBarSections(entApiKey, State.CurrentActivity.Lookup);
+
+                State.SideBar.Actions = sectionsResp.Model.SelectMany(section =>
                 {
-                    var sectionsResp = await appMgr.LoadIDESideBarSections(entApiKey, State.CurrentActivity.Lookup);
+                    var actionsResp = appMgr.LoadIDESideBarActions(entApiKey, State.CurrentActivity.Lookup, section).Result;
 
-                    State.SideBar.Actions = sectionsResp.Model.SelectMany(section =>
-                    {
-                        var actionsResp = appMgr.LoadIDESideBarActions(entApiKey, State.CurrentActivity.Lookup, section).Result;
-
-                        return actionsResp.Model;
-                    }).ToList();
-
-                } else {
-                    // If the user is a free trial user, load the restricted set of sidebar actions
-                    State.SideBar.Actions = new List<IDESideBarAction>();
-
-                    State.SideBar.Actions.Add(new IDESideBarAction() 
-                    {
-                        Action = "welcome",
-                        Group = "lcu-limited-trial",
-                        Section = "Limited Low-Code Unit™ Trials",
-                        Title = "Welcome"
-                    });
-
-                    State.SideBar.Actions.Add(new IDESideBarAction() 
-                    {
-                        Action = "data-flow",
-                        Group = "lcu-limited-trial",
-                        Section = "Limited Low-Code Unit™ Trials",
-                        Title = "Data Flow"
-                    });
-
-                    State.SideBar.Actions.Add(new IDESideBarAction() 
-                    {
-                        Action = "data-apps",
-                        Group = "lcu-limited-trial",
-                        Section = "Limited Low-Code Unit™ Trials",
-                        Title = "Data Applications"
-                    });
-                }
+                    return actionsResp.Model;
+                }).ToList();
             }
             else
                 State.SideBar = new IDESideBar();
@@ -189,6 +148,13 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         public virtual async Task ToggleShowPanels(string group, string action)
         {
             State.ShowPanels = !State.ShowPanels;
+        }
+        #endregion
+
+        #region Helpers
+        protected virtual async Task configureTrialActivities()
+        {
+
         }
         #endregion
     }
