@@ -46,7 +46,7 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         {
 
             // check in to see if user has free trial/paid subscriber rights    
-            var authResp = await idMgr.HasAccess(entApiKey, username, new List<string>() { "LCU.NapkinIDE.ActiveSubscriber" });
+            var authResp = await idMgr.HasAccess(entApiKey, username, new List<string>() { "LCU.NapkinIDE.AllAccess" });
 
             State.IsActiveSubscriber = authResp.Status;
 
