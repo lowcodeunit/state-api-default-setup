@@ -54,6 +54,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
                 await harness.Ensure(appMgr, idMgr, stateDetails.EnterpriseAPIKey, stateDetails.Username);
 
+                harness.SetUsername(stateDetails.Username);
+
                 return Status.Success;
             });
         }

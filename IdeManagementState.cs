@@ -27,45 +27,80 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         #region Constants
         public const string HUB_NAME = "idemanagement";
         #endregion
-        
-		[DataMember]
-		public virtual List<IDEActivity> Activities { get; set; }
 
-		[DataMember]
-		public virtual IDEActivity CurrentActivity { get; set; }
+        [DataMember]
+        public virtual List<IDEActivity> Activities { get; set; }
 
-		[DataMember]
-		public virtual IDEEditor CurrentEditor { get; set; }
+        [DataMember]
+        public virtual IDEActivity CurrentActivity { get; set; }
 
-		[DataMember]
-		public virtual IDEPanel CurrentPanel { get; set; }
+        [DataMember]
+        public virtual IDEEditor CurrentEditor { get; set; }
 
-		[DataMember]
-		public virtual List<IDEEditor> Editors { get; set; }
+        [DataMember]
+        public virtual IDEPanel CurrentPanel { get; set; }
 
-		[DataMember]
-		public virtual bool InfrastructureConfigured { get; set; }
+        [DataMember]
+        public virtual List<IDEEditor> Editors { get; set; }
 
-		[DataMember]
-		public virtual bool IsActiveSubscriber { get; set; }
+        [DataMember]
+        public virtual List<IDEAction> HeaderActions { get; set; }
 
-		[DataMember]
-		public virtual bool Loading { get; set; }
+        [DataMember]
+        public virtual bool InfrastructureConfigured { get; set; }
 
-		[DataMember]
-		public virtual List<IDEPanel> Panels { get; set; }
+        [DataMember]
+        public virtual bool IsActiveSubscriber { get; set; }
 
-		[DataMember]
-		public virtual List<IDEActivity> RootActivities { get; set; }
+        [DataMember]
+        public virtual bool Loading { get; set; }
 
-		[DataMember]
-		public virtual bool ShowPanels { get; set; }
+        [DataMember]
+        public virtual List<IDEPanel> Panels { get; set; }
 
-		[DataMember]
-		public virtual IDESideBar SideBar { get; set; }
+        [DataMember]
+        public virtual List<IDEActivity> RootActivities { get; set; }
 
-		[DataMember]
-		public virtual List<string> StatusChanges { get; set; }
+        [DataMember]
+        public virtual bool ShowPanels { get; set; }
 
+        [DataMember]
+        public virtual IDESideBar SideBar { get; set; }
+
+        [DataMember]
+        public virtual List<string> StatusChanges { get; set; }
+
+        [DataMember]
+        public virtual string Username { get; set; }
+    }
+
+    [DataContract]
+    public class IDEAction
+    {
+        [DataMember]
+        public virtual string Action { get; set; }
+
+        [DataMember]
+        public virtual string Icon { get; set; }
+
+        [DataMember]
+        public virtual string Text { get; set; }
+
+        [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public virtual IDEActionTypes Type { get; set; }
+    }
+
+    [DataContract]
+    public enum IDEActionTypes
+    {
+        [EnumMember]
+        Link,
+
+        [DataMember]
+        ExternalLink,
+
+        [DataMember]
+        Modal
     }
 }

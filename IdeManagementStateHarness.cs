@@ -74,6 +74,31 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                 State.RootActivities = new List<IDEActivity>();
 
                 State.Activities = activitiesResp.Model?.Where(act => act.Lookup == "limited-trial").ToList() ?? new List<IDEActivity>();
+
+                State.HeaderActions = new List<IDEAction>()
+                {
+                    new IDEAction()
+                    {
+                        Text = "Buy Now",
+                        Type = IDEActionTypes.Modal,
+                        Icon = "forward",
+                        Action = "/billing"
+                    },
+                    new IDEAction()
+                    {
+                        Text = "Documentation",
+                        Type = IDEActionTypes.ExternalLink,
+                        Icon = "assignment",
+                        Action = "http://google.com"
+                    },
+                    new IDEAction()
+                    {
+                        Text = "Support",
+                        Type = IDEActionTypes.ExternalLink,
+                        Icon = "help_outline",
+                        Action = "http://google.com"
+                    }
+                };
             }
 
             await LoadSideBar(appMgr, entApiKey);
@@ -145,12 +170,17 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
             State.SideBar.CurrentAction = State.SideBar.Actions.FirstOrDefault(a => $"{a.Group}|{a.Action}" == State.CurrentEditor?.Lookup);
         }
 
+        public virtual void SetUsername(string username)
+        {
+            State.Username = username;
+        }
+
         public virtual async Task ToggleShowPanels(string group, string action)
         {
             State.ShowPanels = !State.ShowPanels;
         }
 
-        
+
         #endregion
 
         #region Helpers
