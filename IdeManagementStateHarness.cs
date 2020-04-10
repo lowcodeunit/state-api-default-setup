@@ -68,6 +68,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                     Lookup = Environment.GetEnvironmentVariable("FORGE-SETTINGS-PATH") ?? "/forge-settings",
                     Title = "Settings"
                 });
+                
+                State.HeaderActions = new List<IDEAction>();
             }
             else
             {
