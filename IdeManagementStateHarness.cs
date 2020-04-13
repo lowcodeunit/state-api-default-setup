@@ -52,12 +52,12 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
             var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
 
-            var appsResp = await appMgr.ListApplications(entApiKey);
-
-            State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
-
             if (State.IsActiveSubscriber)
             {
+                var appsResp = await appMgr.ListApplications(entApiKey);
+
+                State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
+
                 State.Activities = activitiesResp.Model ?? new List<IDEActivity>();
 
                 State.RootActivities = new List<IDEActivity>();
@@ -76,6 +76,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                 State.RootActivities = new List<IDEActivity>();
 
                 State.Activities = activitiesResp.Model?.Where(act => act.Lookup == "limited-trial").ToList() ?? new List<IDEActivity>();
+
+                State.InfrastructureConfigured = true;
 
                 State.HeaderActions = new List<IDEAction>()
                 {
