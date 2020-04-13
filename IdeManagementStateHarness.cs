@@ -52,12 +52,12 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
             var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
 
+            var appsResp = await appMgr.ListApplications(entApiKey);
+
+            State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
+
             if (State.IsActiveSubscriber)
             {
-                var appsResp = await appMgr.ListApplications(entApiKey);
-
-                State.InfrastructureConfigured = activitiesResp.Status && !activitiesResp.Model.IsNullOrEmpty() && appsResp.Status && !appsResp.Model.IsNullOrEmpty();
-
                 State.Activities = activitiesResp.Model ?? new List<IDEActivity>();
 
                 State.RootActivities = new List<IDEActivity>();
@@ -68,7 +68,7 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                     Lookup = Environment.GetEnvironmentVariable("FORGE-SETTINGS-PATH") ?? "/forge-settings",
                     Title = "Settings"
                 });
-                
+
                 State.HeaderActions = new List<IDEAction>();
             }
             else
@@ -101,6 +101,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
                         Action = "http://google.com"
                     }
                 };
+
+                State.CurrentActivity = State.Activities.FirstOrDefault();
             }
 
             await LoadSideBar(appMgr, entApiKey);
