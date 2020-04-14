@@ -52,6 +52,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
             var activitiesResp = await appMgr.LoadIDEActivities(entApiKey);
 
+            State.HeaderActions = new List<IDEAction>();
+
             if (State.IsActiveSubscriber)
             {
                 var appsResp = await appMgr.ListApplications(entApiKey);
@@ -79,33 +81,32 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
                 State.InfrastructureConfigured = true;
 
-                State.HeaderActions = new List<IDEAction>()
+                State.HeaderActions.Add(new IDEAction()
                 {
-                    new IDEAction()
-                    {
-                        Text = "Buy Now",
-                        Type = IDEActionTypes.Modal,
-                        Icon = "forward",
-                        Action = "/billing"
-                    },
-                    new IDEAction()
-                    {
-                        Text = "Documentation",
-                        Type = IDEActionTypes.ExternalLink,
-                        Icon = "assignment",
-                        Action = "http://google.com"
-                    },
-                    new IDEAction()
-                    {
-                        Text = "Support",
-                        Type = IDEActionTypes.ExternalLink,
-                        Icon = "help_outline",
-                        Action = "http://google.com"
-                    }
-                };
+                    Text = "Buy Now",
+                    Type = IDEActionTypes.Modal,
+                    Icon = "shopping_cart",
+                    Action = "/billing"
+                });
 
                 State.CurrentActivity = State.Activities.FirstOrDefault();
             }
+
+            State.HeaderActions.Add(new IDEAction()
+            {
+                Text = "",
+                Type = IDEActionTypes.ExternalLink,
+                Icon = "assignment",
+                Action = "https://support.fathym.com"
+            });
+
+            State.HeaderActions.Add(new IDEAction()
+            {
+                Text = "",
+                Type = IDEActionTypes.Link,
+                Icon = "help_outline",
+                Action = "mailto:support@fathym.com?subject=Fathym IDE Support - ____&body=Please provide us as much detail as you can so that we may better support you."
+            });
 
             await LoadSideBar(appMgr, entApiKey);
 
