@@ -8,40 +8,39 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using System.Linq;
+using LCU.Graphs.Registry.Enterprises.IDE;
+using LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.State;
 using Fathym;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.WindowsAzure.Storage.Blob;
 using LCU.StateAPI.Utilities;
-using LCU.Personas.Client.Applications;
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Settings
 {
 	[Serializable]
 	[DataContract]
-	public class ToggleShowPanelsRequest
+	public class SetEditActivityRequest
 	{
 		[DataMember]
-		public virtual string Action { get; set; }
-
-		[DataMember]
-		public virtual string Group { get; set; }
+		public virtual string Activity { get; set; }
 	}
 
-	public class ToggleShowPanels
+	public class SetEditActivity
     {
-        [FunctionName("ToggleShowPanels")]
+        [FunctionName("SetEditActivity")]
         public virtual async Task<Status> Run([HttpTrigger] HttpRequest req, ILogger log,
-            [SignalR(HubName = IdeManagementState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
+            [SignalR(HubName = IDEManagementState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
             [Blob("state-api/{headers.lcu-ent-api-key}/{headers.lcu-hub-name}/{headers.x-ms-client-principal-id}/{headers.lcu-state-key}", FileAccess.ReadWrite)] CloudBlockBlob stateBlob)
         {
-            return await stateBlob.WithStateHarness<IdeManagementState, ToggleShowPanelsRequest, IdeManagementStateHarness>(req, signalRMessages, log,
+            return await stateBlob.WithStateHarness<IDESettingsState, SetEditActivityRequest, IDESettingsStateHarness>(req, signalRMessages, log,
                 async (harness, reqData, actReq) =>
             {
-				log.LogInformation($"Toggling Show Panels: {reqData.Group} {reqData.Action}");
+				log.LogInformation($"SetEditActivity");
 
                 var stateDetails = StateUtils.LoadStateDetails(req);
 
-				await harness.ToggleShowPanels(reqData.Group, reqData.Action);
+				await harness.SetEditActivity(reqData.Activity);
 
                 return Status.Success;
             });

@@ -25,9 +25,9 @@ using LCU.Personas.Client.Identity;
 using Fathym.API;
 using LCU.Graphs.Registry.Enterprises.IDE;
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.State
 {
-    public class IdeManagementStateHarness : LCUStateHarness<IdeManagementState>
+    public class IDEStateHarness : LCUStateHarness<IDEState>
     {
         #region Fields
         #endregion
@@ -36,8 +36,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
         #endregion
 
         #region Constructors
-        public IdeManagementStateHarness(IdeManagementState state)
-            : base(state ?? new IdeManagementState())
+        public IDEStateHarness(IDEState state)
+            : base(state ?? new IDEState())
         { }
         #endregion
 

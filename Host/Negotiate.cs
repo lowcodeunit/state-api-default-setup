@@ -8,15 +8,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
+using LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.State;
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host
 {
-    public static class Negotiate
+    public class Negotiate
     {
         [FunctionName("negotiate")]
         public static SignalRConnectionInfo Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "options")] HttpRequest req,
-            [SignalRConnectionInfo(HubName = IdeManagementState.HUB_NAME, UserId = "{headers.x-ms-client-principal-id}")] SignalRConnectionInfo connectionInfo)
+            [SignalRConnectionInfo(HubName = IDEManagementState.HUB_NAME, UserId = "{headers.x-ms-client-principal-id}")] SignalRConnectionInfo connectionInfo)
         {
             return connectionInfo;
         }

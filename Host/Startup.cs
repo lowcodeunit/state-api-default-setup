@@ -13,9 +13,9 @@ using System.Linq;
 using System;
 using LCU.StateAPI;
 
-[assembly: FunctionsStartup(typeof(LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Startup))]
+[assembly: FunctionsStartup(typeof(LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host.Startup))]
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host
 {
     public class Startup : StateAPIStartup
     {

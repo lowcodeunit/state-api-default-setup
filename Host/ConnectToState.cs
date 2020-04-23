@@ -11,19 +11,25 @@ using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using LCU.StateAPI;
 using Microsoft.WindowsAzure.Storage.Blob;
 using LCU.StateAPI.Utilities;
+using LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.State;
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host
 {
-    public static class ConnectToState
+    public class ConnectToState
     {
         [FunctionName("ConnectToState")]
         public static async Task<ConnectToStateResponse> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")]HttpRequest req, ILogger log,
             ClaimsPrincipal claimsPrincipal, //[LCUStateDetails]StateDetails stateDetails,
-            [SignalR(HubName = IdeManagementState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
-            [SignalR(HubName = IdeManagementState.HUB_NAME)]IAsyncCollector<SignalRGroupAction> signalRGroupActions,
+            [SignalR(HubName = IDEManagementState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
+            [SignalR(HubName = IDEManagementState.HUB_NAME)]IAsyncCollector<SignalRGroupAction> signalRGroupActions,
             [Blob("state-api/{headers.lcu-ent-api-key}/{headers.lcu-hub-name}/{headers.x-ms-client-principal-id}/{headers.lcu-state-key}", FileAccess.ReadWrite)] CloudBlockBlob stateBlob)
         {
-            return await signalRMessages.ConnectToState<IdeManagementState>(req, log, claimsPrincipal, stateBlob, signalRGroupActions);
+            var stateDetails = StateUtils.LoadStateDetails(req);
+
+            if (stateDetails.StateKey == "settings")
+                return await signalRMessages.ConnectToState<IDESettingsState>(req, log, claimsPrincipal, stateBlob, signalRGroupActions);
+            else
+                return await signalRMessages.ConnectToState<IDEState>(req, log, claimsPrincipal, stateBlob, signalRGroupActions);
         }
     }
 }
