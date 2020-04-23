@@ -30,11 +30,13 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host
 
     public class Refresh
     {
+        protected ApplicationDeveloperClient appDev;
+
         protected ApplicationManagerClient appMgr;
 
         protected IdentityManagerClient idMgr;
 
-        public Refresh(ApplicationManagerClient appMgr, IdentityManagerClient idMgr)
+        public Refresh(ApplicationDeveloperClient appDev, ApplicationManagerClient appMgr, IdentityManagerClient idMgr)
         {
             this.appMgr = appMgr;
 
@@ -55,6 +57,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host
                 {
                     log.LogInformation($"Refresh");
                     
+                    await harness.Ensure(appDev, stateDetails.EnterpriseAPIKey);
+
                     await harness.LoadActivities(appMgr, stateDetails.EnterpriseAPIKey);
 
                     await harness.ConfigureSideBarEditActivity(appMgr, stateDetails.EnterpriseAPIKey, stateDetails.Host);
