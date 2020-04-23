@@ -38,6 +38,8 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.Host
 
         public Refresh(ApplicationDeveloperClient appDev, ApplicationManagerClient appMgr, IdentityManagerClient idMgr)
         {
+            this.appDev = appDev;
+
             this.appMgr = appMgr;
 
             this.idMgr = idMgr;
