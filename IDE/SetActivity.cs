@@ -10,8 +10,9 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.IO;
 using LCU.StateAPI.Utilities;
 using LCU.Personas.Client.Applications;
+using LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.State;
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.IDE
 {
 	[Serializable]
 	[DataContract]
@@ -32,10 +33,10 @@ namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
 
 		[FunctionName("SetActivity")]
         public virtual async Task<Status> Run([HttpTrigger] HttpRequest req, ILogger log,
-            [SignalR(HubName = IdeManagementState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
+            [SignalR(HubName = IDEManagementState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
             [Blob("state-api/{headers.lcu-ent-api-key}/{headers.lcu-hub-name}/{headers.x-ms-client-principal-id}/{headers.lcu-state-key}", FileAccess.ReadWrite)] CloudBlockBlob stateBlob)
         {
-            return await stateBlob.WithStateHarness<IdeManagementState, SetActivityRequest, IdeManagementStateHarness>(req, signalRMessages, log,
+            return await stateBlob.WithStateHarness<IDEState, SetActivityRequest, IDEStateHarness>(req, signalRMessages, log,
                 async (harness, reqData, actReq) =>
             {
 				log.LogInformation($"Set Activity {reqData.Activity}");

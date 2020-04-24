@@ -18,16 +18,12 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 using LCU.Graphs.Registry.Enterprises.IDE;
 
-namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement
+namespace LCU.State.API.NapkinIDE.NapkinIDE.IdeManagement.State
 {
     [Serializable]
     [DataContract]
-    public class IdeManagementState
+    public class IDEState
     {
-        #region Constants
-        public const string HUB_NAME = "idemanagement";
-        #endregion
-
         [DataMember]
         public virtual List<IDEActivity> Activities { get; set; }
 
