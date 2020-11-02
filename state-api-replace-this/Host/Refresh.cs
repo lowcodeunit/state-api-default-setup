@@ -48,6 +48,8 @@ namespace LCU.State.API.ReplaceThis.Host
 
                 var stateDetails = StateUtils.LoadStateDetails(req);
 
+                await harness.Refresh();
+
                 return Status.Success;
             });
         }
