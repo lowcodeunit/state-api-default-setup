@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Fathym;
 using Fathym.API;
 
-namespace LCU.State.API.ReplaceThis.Host.Tests
+namespace LCU.State.API.ReplaceThis.Tests.Host
 {
     [TestClass]
     public class RefreshTests : AzFunctionTestBase
