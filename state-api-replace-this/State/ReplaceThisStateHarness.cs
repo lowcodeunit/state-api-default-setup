@@ -40,7 +40,7 @@ namespace LCU.State.API.ReplaceThis.State
         #endregion
 
         #region API Methods
-        public virtual void CompleteBoot()
+        public virtual async Task Refresh()
         {
             // State.L = true;
         }
