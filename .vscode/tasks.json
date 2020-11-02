@@ -26,6 +26,9 @@
     {
         "label": "build",
         "command": "dotnet",
+        "options": {
+          "cwd": "${workspaceFolder}/${workspaceFolderBasename}"
+        }, 
         "args": [
             "build",
             "/property:GenerateFullPaths=true",
