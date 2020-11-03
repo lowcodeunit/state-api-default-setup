@@ -24,7 +24,7 @@ namespace LCU.State.API.ReplaceThis.Tests.Host
         [TestMethod]
         public async Task TestConnectToState()
         {
-            LcuEntApiKey = "";            
+            LcuEntLookup = "";            
             PrincipalId = "";
 
             addRequestHeaders();
