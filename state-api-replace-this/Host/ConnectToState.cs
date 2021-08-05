@@ -22,7 +22,7 @@ namespace LCU.State.API.ReplaceThis.Host
             ClaimsPrincipal claimsPrincipal, //[LCUStateDetails]StateDetails stateDetails,
             [SignalR(HubName = ReplaceThisState.HUB_NAME)]IAsyncCollector<SignalRMessage> signalRMessages,
             [SignalR(HubName = ReplaceThisState.HUB_NAME)]IAsyncCollector<SignalRGroupAction> signalRGroupActions,
-            [Blob("state-api/{headers.lcu-ent-api-key}/{headers.lcu-hub-name}/{headers.x-ms-client-principal-id}/{headers.lcu-state-key}", FileAccess.ReadWrite)] CloudBlockBlob stateBlob)
+            [Blob("state-api/{headers.lcu-ent-lookup}/{headers.lcu-hub-name}/{headers.x-ms-client-principal-id}/{headers.lcu-state-key}", FileAccess.ReadWrite)] CloudBlockBlob stateBlob)
         {
             return await signalRMessages.ConnectToState<ReplaceThisState>(req, log, claimsPrincipal, stateBlob, signalRGroupActions);
         }

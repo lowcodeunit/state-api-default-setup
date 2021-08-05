@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Fathym;
 using Fathym.API;
 
-namespace state_api_replace_this_tests
+namespace LCU.State.API.ReplaceThis.Tests.Host
 {
     [TestClass]
     public class NegotiateTests : AzFunctionTestBase
@@ -24,7 +24,7 @@ namespace state_api_replace_this_tests
         [TestMethod]
         public async Task TestNegotiate()
         {
-            LcuEntApiKey = "";            
+            LcuEntLookup = "";            
             PrincipalId = "";
 
             addRequestHeaders();
